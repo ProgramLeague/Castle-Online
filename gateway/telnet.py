@@ -7,7 +7,7 @@
 
 from twisted.internet import reactor, protocol
 
-IAC_DISABLE_ECHO = "\xff\xfb\x01\xff\xfb\x03"
+IAC_DISABLE_ECHO_READLINE = "\xff\xfb\x01\xff\xfb\x03"
 
 class TelnetService(object):
     """
@@ -23,7 +23,8 @@ class TelnetService(object):
     def handle(self, data):
         #print repr(data)
         if data[0] == "\xff":
-            print "IAC"
+            #print "IAC"
+            pass
         elif self._readline:
             return data.strip()
         elif data == "\r\n" or data == "\r\x00": #read-line
@@ -37,8 +38,8 @@ class TelnetService(object):
             return None
 
     def chmod(self):
-        self._protocol.transport.write(IAC_DISABLE_ECHO)
-        self._echo = False
+        self._protocol.transport.write(IAC_DISABLE_ECHO_READLINE)
+        self._echo = True
         self._readline = False
 
     def enableEcho(self):

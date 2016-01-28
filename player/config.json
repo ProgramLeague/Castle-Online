@@ -1,0 +1,13 @@
+{
+	"ip" : "localhost",
+	"port" : 2334,
+	"logfile" : "/tmp/player.log",
+	"dbpath" : "/tmp/player.db",
+	"nodes" : [
+		{
+			"name" : "castle",
+			"type" : "unix",
+			"addr" : "/tmp/castle.sock"
+		}
+	]
+}

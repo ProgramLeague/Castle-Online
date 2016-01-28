@@ -1,0 +1,18 @@
+{
+	"ip" : "",
+	"port" : 2333,
+	"logfile" : "/tmp/gateway.log",
+	"nodes" : [
+		{
+			"name" : "player",
+			"type" : "tcp",
+			"host" : "localhost",
+			"port" : 2334
+		},
+		{
+			"name" : "castle",
+			"type" : "unix",
+			"addr" : "/tmp/castle.sock"
+		}
+	]
+}
