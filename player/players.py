@@ -6,6 +6,7 @@
 # Created Time: 2016年01月27日 星期三 21时03分38秒
 
 from mutils.dbproxy import Persistent
+from player.commands import HandlersManager
 
 import sqlite3, os, hashlib
 
@@ -19,9 +20,10 @@ class Player(Persistent):
 
 
 
-class PlayerManager(object):
+class PlayerManager(HandlersManager):
 
     def __init__(self, dbpath):
+        HandlersManager.__init__(self)
         if os.path.exists(dbpath):
             self._conn = sqlite3.connect(dbpath)
         else:
@@ -36,6 +38,14 @@ class PlayerManager(object):
 
     def setPlayer(self, player):
         self._players[player.name] = player
+
+    def delPlayer(self, name):
+        if name in self._players:
+            self._players[name].flush()
+            del self._players[name]
+            return True
+        else:
+            return False
 
     def loginPlayer(self, pname):
         player = Player(self._conn, name=pname)

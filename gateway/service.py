@@ -13,6 +13,7 @@ from gateway.telnet import TelnetService
 from mutils.nodes import NodeProxy
 
 import sys, time, json
+import cPickle as pickle
 
 WELCOME_MESSAGE = "欢迎来到Castle-Online\r\n\r\n"
 
@@ -36,7 +37,8 @@ class SessionProtocol(protocol.Protocol):
             if self._session.logged():
                 pbproxy = self._factory["player"]
                 if pbproxy:
-                    pbproxy.callRemote("handle", self._session._name, cmd).\
+                    pbproxy.callRemote("handle", self._session._name,
+                                       pickle.dumps(cmd)).\
                         addCallback(self._cmdResult)
                 else:
                     self._protocol.transport.write("\r\n用戶服务器未启动!\r\n")
@@ -46,11 +48,13 @@ class SessionProtocol(protocol.Protocol):
                 self._session.handle(cmd)
 
     def _cmdResult(self, result):
-        self.writeShell(str(result))
+        self.writeShell(result)
 
     def writeShell(self, data):
-        self.transport.write("\r\n")
-        self.transport.write(data)
+        if data:
+            self.transport.write("\r\n")
+            self.transport.write(str(data))
+
         lt = time.localtime()
         self.transport.write(SessionProtocol.SHELL %
                              (self._locate, lt.tm_hour, lt.tm_min, lt.tm_sec))

@@ -27,12 +27,12 @@ class Session(object):
             self._protocol.transport.write("用户名:")
             self._stat = Session.SESSION_STAT_NAME
         elif self._stat == Session.SESSION_STAT_NAME:
-            self._name = cmd
+            self._name = cmd.args[0]
             self._protocol.transport.write("\r\n密码:")
             self._protocol._telnet.disableEcho()
             self._stat = Session.SESSION_STAT_PWD
         elif self._stat == Session.SESSION_STAT_PWD:
-            self._pwd = cmd
+            self._pwd = cmd.args[0]
             self.login()
         else:
             pass
@@ -52,6 +52,8 @@ class Session(object):
             self._protocol._locate = result[2]
             self._protocol.writeShell(result[1])
             self._protocol._telnet.enableEcho()
+            self._protocol._telnet.disableSpace()
+            self._protocol._telnet.enableAC()
         elif result[0] == PlayerService.LOGIN_NEED_PWD:
             if self._loginRetry:
                 self._loginRetry -= 1
@@ -68,7 +70,9 @@ class Session(object):
             self._protocol._telnet.enableEcho()
         
     def logout(self):
-        pass
+        pbproxy = self._protocol._factory["player"]
+        if pbproxy:
+            pbproxy.callRemote("logout", self._name)
 
     def logged(self):
         return self._stat == Session.SESSION_STAT_DONE

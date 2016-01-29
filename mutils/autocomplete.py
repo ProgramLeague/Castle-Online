@@ -15,7 +15,7 @@ class AutoCompleteBase(object):
     def __init__(self):
         pass
 
-    def complete(self, cmds):
+    def complete(self, player, cmds):
         pass
 
 
@@ -27,13 +27,14 @@ class AutoComplete(AutoCompleteBase):
     def pushHandler(self, handler):
         self._handlers[handler.name] = handler
 
-    def complete(self, cmds):
-        if len(cmds) == 1:
+    def complete(self, player, cmd):
+        if len(cmd.args) == 0:
             ret = []
+            tmpbuf = "".join(cmd.tmpbuf())
             for k in self._handlers:
-                if k.startswith(cmds[0]):
+                if k.startswith(tmpbuf):
                     ret.append(k)
             return ret
         else:
-            if cmds[0] in self._handlers:
-                return self._handlers[cmds[0]].complete(cmds[1:])
+            if cmd.args[0] in self._handlers:
+                return self._handlers[cmd.args[0]].complete(player, cmd)
